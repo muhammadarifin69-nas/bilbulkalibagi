@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kuis Bilangan Bulat — Kelas 7</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #12142B;
+    --surface: #1B1E3F;
+    --surface-alt: #252A57;
+    --line: #363B6E;
+    --text: #F1F0FB;
+    --muted: #9C9FC7;
+    --teal: #34D1BF;
+    --coral: #FF6B81;
+    --gold: #FFC857;
+    --radius: 14px;
+  }
+  *{ box-sizing: border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    min-height: 100vh;
+    display:flex;
+    justify-content:center;
+    padding: 32px 16px;
+  }
+  .app{
+    width:100%;
+    max-width: 480px;
+  }
+  .card{
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 28px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .num{ font-family: 'JetBrains Mono', monospace; }
+
+  /* ---------- Hero (start screen) ---------- */
+  .hero-symbols{
+    position:absolute;
+    top: -34px; right: -18px;
+    font-family:'JetBrains Mono', monospace;
+    font-size: 130px;
+    font-weight:700;
+    line-height:1;
+    color: var(--teal);
+    opacity: 0.14;
+    pointer-events:none;
+    user-select:none;
+  }
+  .hero-symbols span{ color: var(--coral); }
+
+  .eyebrow-free-title{
+    font-size: 26px;
+    font-weight:700;
+    margin: 4px 0 2px 0;
+    position:relative;
+  }
+  .subtitle{
+    color: var(--muted);
+    font-size: 14.5px;
+    margin: 0 0 24px 0;
+    line-height:1.5;
+    position:relative;
+    max-width: 34ch;
+  }
+
+  label{
+    display:block;
+    font-size: 13px;
+    color: var(--muted);
+    margin: 16px 0 6px 0;
+  }
+  input[type=text]{
+    width:100%;
+    background: var(--surface-alt);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px 14px;
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 15px;
+    outline: none;
+    transition: border-color .15s ease;
+  }
+  input[type=text]:focus{
+    border-color: var(--teal);
+  }
+  .field-error{
+    color: var(--coral);
+    font-size: 12.5px;
+    margin-top: 6px;
+    min-height: 16px;
+  }
+
+  button{
+    font-family: 'Space Grotesk', sans-serif;
+    cursor:pointer;
+    border:none;
+  }
+  .btn-primary{
+    width:100%;
+    margin-top: 22px;
+    background: var(--teal);
+    color: #0B2A28;
+    font-weight:700;
+    font-size: 15.5px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    transition: transform .1s ease, filter .15s ease;
+  }
+  .btn-primary:hover{ filter: brightness(1.08); }
+  .btn-primary:active{ transform: scale(0.98); }
+
+  .btn-ghost{
+    width:100%;
+    margin-top: 10px;
+    background: transparent;
+    color: var(--muted);
+    font-size: 14px;
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    transition: color .15s ease, border-color .15s ease;
+  }
+  .btn-ghost:hover{ color: var(--text); border-color: var(--muted); }
+
+  /* ---------- Progress: number line dots ---------- */
+  .progress-line{
+    display:flex;
+    align-items:center;
+    gap: 6px;
+    margin-bottom: 18px;
+  }
+  .progress-dot{
+    flex:1;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--line);
+    transition: background .2s ease;
+  }
+  .progress-dot.done{ background: var(--teal); }
+  .progress-dot.current{ background: var(--gold); }
+
+  .meta-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+  .score-pill{
+    background: var(--surface-alt);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-family:'JetBrains Mono', monospace;
+    color: var(--gold);
+  }
+
+  .timer-track{
+    height: 6px;
+    background: var(--surface-alt);
+    border-radius: 3px;
+    overflow:hidden;
+    margin-bottom: 20px;
+  }
+  .timer-fill{
+    height:100%;
+    background: var(--teal);
+    width:100%;
+    transition: width 1s linear, background .2s ease;
+  }
+
+  .equation{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 30px;
+    font-weight:700;
+    text-align:center;
+    padding: 22px 8px;
+    background: var(--surface-alt);
+    border-radius: 12px;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+  }
+
+  .options{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .opt{
+    background: var(--surface-alt);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 8px;
+    font-family:'JetBrains Mono', monospace;
+    font-size: 17px;
+    font-weight: 600;
+    text-align:center;
+    color: var(--text);
+    transition: border-color .15s ease, background .15s ease;
+  }
+  .opt:hover:not(:disabled){ border-color: var(--teal); }
+  .opt:disabled{ cursor:default; }
+  .opt.correct{ background: rgba(52,209,191,0.18); border-color: var(--teal); color: var(--teal); }
+  .opt.wrong{ background: rgba(255,107,129,0.18); border-color: var(--coral); color: var(--coral); }
+
+  .explain{
+    margin-top: 16px;
+    font-size: 13.5px;
+    color: var(--muted);
+    line-height: 1.5;
+    min-height: 20px;
+  }
+
+  /* ---------- Result ---------- */
+  .result-score{
+    text-align:center;
+    padding: 22px 0 6px 0;
+  }
+  .result-score .big{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 54px;
+    font-weight:700;
+    color: var(--gold);
+    line-height:1;
+  }
+  .result-score .of{
+    color: var(--muted);
+    font-size: 14px;
+    margin-top: 4px;
+  }
+  .stat-row{
+    display:flex;
+    gap: 10px;
+    margin: 18px 0 6px 0;
+  }
+  .stat{
+    flex:1;
+    background: var(--surface-alt);
+    border-radius: 10px;
+    padding: 12px;
+    text-align:center;
+  }
+  .stat .n{ font-family:'JetBrains Mono', monospace; font-size:20px; font-weight:700; }
+  .stat .l{ font-size: 11.5px; color: var(--muted); margin-top:2px; }
+
+  .privacy-note{
+    font-size: 12px;
+    color: var(--muted);
+    text-align:center;
+    margin-top: 14px;
+    line-height:1.5;
+  }
+
+  /* ---------- Leaderboard ---------- */
+  .lb-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-bottom: 16px;
+  }
+  .lb-title{ font-size: 20px; font-weight:700; }
+  .lb-list{
+    display:flex;
+    flex-direction:column;
+    gap: 8px;
+    max-height: 360px;
+    overflow-y:auto;
+  }
+  .lb-row{
+    display:flex;
+    align-items:center;
+    gap: 12px;
+    background: var(--surface-alt);
+    border-radius: 10px;
+    padding: 10px 12px;
+  }
+  .lb-row.me{ border: 1px solid var(--gold); }
+  .lb-rank{
+    font-family:'JetBrains Mono', monospace;
+    font-weight:700;
+    color: var(--muted);
+    width: 22px;
+    text-align:center;
+    flex-shrink:0;
+  }
+  .lb-rank.top1{ color: var(--gold); }
+  .lb-rank.top2{ color: #C9CCEB; }
+  .lb-rank.top3{ color: #E8A87C; }
+  .lb-name{ flex:1; min-width:0; }
+  .lb-name .n{ font-weight:600; font-size:14.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .lb-name .k{ font-size:12px; color: var(--muted); }
+  .lb-score{
+    font-family:'JetBrains Mono', monospace;
+    font-weight:700;
+    color: var(--teal);
+  }
+  .lb-empty{
+    color: var(--muted);
+    font-size: 14px;
+    text-align:center;
+    padding: 30px 0;
+  }
+  .lb-loading{
+    color: var(--muted);
+    font-size: 14px;
+    text-align:center;
+    padding: 30px 0;
+  }
+
+  @media (max-width: 380px){
+    .equation{ font-size: 24px; }
+    .options{ gap: 8px; }
+    .opt{ font-size: 15px; padding: 12px 6px; }
+  }
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+
+<script>
+const QUESTIONS = [
+  { eq: "(−4) × 6 = ?", options: ["−24","24","−10","10"], correct: 0,
+    explain: "Bilangan negatif dikali bilangan positif menghasilkan bilangan negatif: (−4) × 6 = −24." },
+  { eq: "7 × (−8) = ?", options: ["56","−56","−15","15"], correct: 1,
+    explain: "Positif dikali negatif menghasilkan negatif: 7 × (−8) = −56." },
+  { eq: "(−9) × (−5) = ?", options: ["−45","45","−14","14"], correct: 1,
+    explain: "Negatif dikali negatif menghasilkan positif: (−9) × (−5) = 45." },
+  { eq: "(−48) : 6 = ?", options: ["−8","8","−42","42"], correct: 0,
+    explain: "Negatif dibagi positif menghasilkan negatif: (−48) : 6 = −8." },
+  { eq: "72 : (−9) = ?", options: ["8","−8","−63","63"], correct: 1,
+    explain: "Positif dibagi negatif menghasilkan negatif: 72 : (−9) = −8." },
+  { eq: "(−63) : (−7) = ?", options: ["−9","9","−70","70"], correct: 1,
+    explain: "Negatif dibagi negatif menghasilkan positif: (−63) : (−7) = 9." },
+  { eq: "Hasil kali dua bilangan bulat negatif selalu bernilai...", options: ["Positif","Negatif","Nol","Tergantung angkanya"], correct: 0,
+    explain: "Aturan tanda: negatif × negatif = positif, berlaku untuk semua bilangan bulat negatif." },
+  { eq: "(−6) × 4 : (−8) = ?", options: ["3","−3","12","−12"], correct: 0,
+    explain: "Hitung dari kiri: (−6) × 4 = −24, lalu −24 : (−8) = 3." },
+  { eq: "(−15) × (−2) × (−1) = ?", options: ["−30","30","−13","13"], correct: 0,
+    explain: "(−15) × (−2) = 30, lalu 30 × (−1) = −30. Tiga faktor negatif menghasilkan hasil negatif." },
+  { eq: "0 : (−17) = ?", options: ["0","−17","17","Tidak terdefinisi"], correct: 0,
+    explain: "Nol dibagi bilangan apa pun (kecuali nol) selalu menghasilkan nol." },
+];
+
+const TIME_PER_Q = 20; // detik
+const state = {
+  screen: 'start',
+  name: '',
+  kelas: '',
+  qIndex: 0,
+  score: 0,
+  correctCount: 0,
+  answered: false,
+  timeLeft: TIME_PER_Q,
+  timerHandle: null,
+  leaderboard: null,
+  savedThisRun: false,
+};
+
+const app = document.getElementById('app');
+
+function render(){
+  if(state.screen === 'start') return renderStart();
+  if(state.screen === 'quiz') return renderQuiz();
+  if(state.screen === 'result') return renderResult();
+  if(state.screen === 'leaderboard') return renderLeaderboard();
+}
+
+// ---------------- START ----------------
+function renderStart(){
+  app.innerHTML = `
+    <div class="card">
+      <div class="hero-symbols">×<span>÷</span></div>
+      <div class="eyebrow-free-title">Bilangan Bulat: Kali & Bagi</div>
+      <p class="subtitle">10 soal perkalian dan pembagian bilangan bulat untuk kelas 7. Isi namamu, lalu mulai.</p>
+
+      <label for="in-name">Nama</label>
+      <input type="text" id="in-name" placeholder="Nama lengkap" maxlength="40" value="${escapeAttr(state.name)}">
+
+      <label for="in-kelas">Kelas</label>
+      <input type="text" id="in-kelas" placeholder="Contoh: 7B" maxlength="20" value="${escapeAttr(state.kelas)}">
+      <div class="field-error" id="err"></div>
+
+      <button class="btn-primary" id="start-btn">Mulai kuis</button>
+      <button class="btn-ghost" id="lb-btn">Lihat papan skor</button>
+    </div>
+  `;
+  document.getElementById('start-btn').onclick = () => {
+    const name = document.getElementById('in-name').value.trim();
+    const kelas = document.getElementById('in-kelas').value.trim();
+    if(!name || !kelas){
+      document.getElementById('err').textContent = 'Isi nama dan kelas terlebih dahulu.';
+      return;
+    }
+    state.name = name;
+    state.kelas = kelas;
+    saveProfile({name, kelas});
+    startQuiz();
+  };
+  document.getElementById('lb-btn').onclick = () => {
+    state.screen = 'leaderboard';
+    render();
+  };
+
+  loadProfile().then(p => {
+    if(p && !state.name){
+      const ni = document.getElementById('in-name');
+      const ki = document.getElementById('in-kelas');
+      if(ni && !ni.value) ni.value = p.name || '';
+      if(ki && !ki.value) ki.value = p.kelas || '';
+    }
+  });
+}
+
+// ---------------- QUIZ ----------------
+function startQuiz(){
+  state.qIndex = 0;
+  state.score = 0;
+  state.correctCount = 0;
+  state.savedThisRun = false;
+  state.screen = 'quiz';
+  loadQuestion();
+}
+
+function loadQuestion(){
+  state.answered = false;
+  state.timeLeft = TIME_PER_Q;
+  renderQuiz();
+  clearInterval(state.timerHandle);
+  state.timerHandle = setInterval(() => {
+    state.timeLeft -= 1;
+    updateTimerUI();
+    if(state.timeLeft <= 0){
+      clearInterval(state.timerHandle);
+      if(!state.answered) submitAnswer(-1);
+    }
+  }, 1000);
+}
+
+function renderQuiz(){
+  const q = QUESTIONS[state.qIndex];
+  const total = QUESTIONS.length;
+
+  let dots = '';
+  for(let i=0;i<total;i++){
+    let cls = 'progress-dot';
+    if(i < state.qIndex) cls += ' done';
+    else if(i === state.qIndex) cls += ' current';
+    dots += `<div class="${cls}"></div>`;
+  }
+
+  let opts = '';
+  q.options.forEach((opt, i) => {
+    opts += `<button class="opt" data-i="${i}">${opt}</button>`;
+  });
+
+  app.innerHTML = `
+    <div class="card">
+      <div class="progress-line">${dots}</div>
+      <div class="meta-row">
+        <span>Soal ${state.qIndex + 1} dari ${total}</span>
+        <span class="score-pill num">${state.score} poin</span>
+      </div>
+      <div class="timer-track"><div class="timer-fill" id="timer-fill"></div></div>
+      <div class="equation">${q.eq}</div>
+      <div class="options" id="options">${opts}</div>
+      <div class="explain" id="explain"></div>
+    </div>
+  `;
+  updateTimerUI();
+
+  document.querySelectorAll('.opt').forEach(btn => {
+    btn.onclick = () => submitAnswer(parseInt(btn.dataset.i, 10));
+  });
+}
+
+function updateTimerUI(){
+  const fill = document.getElementById('timer-fill');
+  if(!fill) return;
+  const pct = Math.max(0, (state.timeLeft / TIME_PER_Q) * 100);
+  fill.style.width = pct + '%';
+  fill.style.background = pct < 30 ? 'var(--coral)' : (pct < 60 ? 'var(--gold)' : 'var(--teal)');
+}
+
+function submitAnswer(choiceIndex){
+  if(state.answered) return;
+  state.answered = true;
+  clearInterval(state.timerHandle);
+
+  const q = QUESTIONS[state.qIndex];
+  const isCorrect = choiceIndex === q.correct;
+  const buttons = document.querySelectorAll('.opt');
+
+  buttons.forEach((btn, i) => {
+    btn.disabled = true;
+    if(i === q.correct) btn.classList.add('correct');
+    else if(i === choiceIndex) btn.classList.add('wrong');
+  });
+
+  if(isCorrect){
+    const bonus = Math.round((state.timeLeft / TIME_PER_Q) * 5);
+    state.score += 10 + bonus;
+    state.correctCount += 1;
+  }
+
+  document.getElementById('explain').textContent = q.explain;
+  const pill = document.querySelector('.score-pill');
+  if(pill) pill.textContent = state.score + ' poin';
+
+  setTimeout(() => {
+    if(state.qIndex < QUESTIONS.length - 1){
+      state.qIndex += 1;
+      loadQuestion();
+    } else {
+      state.screen = 'result';
+      render();
+    }
+  }, 1600);
+}
+
+// ---------------- RESULT ----------------
+function renderResult(){
+  const total = QUESTIONS.length;
+  app.innerHTML = `
+    <div class="card">
+      <div class="result-score">
+        <div class="big num">${state.score}</div>
+        <div class="of">poin total</div>
+      </div>
+      <div class="stat-row">
+        <div class="stat"><div class="n num">${state.correctCount}/${total}</div><div class="l">Jawaban benar</div></div>
+        <div class="stat"><div class="n num">${Math.round((state.correctCount/total)*100)}%</div><div class="l">Ketepatan</div></div>
+      </div>
+      <button class="btn-primary" id="save-btn">Simpan skor & lihat papan skor</button>
+      <button class="btn-ghost" id="retry-btn">Main lagi</button>
+      <div class="privacy-note" id="note">Skor yang disimpan akan tampil di papan skor bersama dan dapat dilihat oleh pengguna lain.</div>
+    </div>
+  `;
+  document.getElementById('retry-btn').onclick = () => {
+    state.screen = 'start';
+    render();
+  };
+  document.getElementById('save-btn').onclick = async (e) => {
+    e.target.disabled = true;
+    e.target.textContent = 'Menyimpan...';
+    await saveScoreToLeaderboard();
+    state.screen = 'leaderboard';
+    render();
+  };
+}
+
+async function saveScoreToLeaderboard(){
+  if(state.savedThisRun) return;
+  try{
+    const list = await loadLeaderboardData();
+    list.push({
+      name: state.name,
+      kelas: state.kelas,
+      score: state.score,
+      correct: state.correctCount,
+      total: QUESTIONS.length,
+      date: Date.now(),
+    });
+    list.sort((a,b) => b.score - a.score);
+    const trimmed = list.slice(0, 50);
+    await window.storage.set('leaderboard-data', JSON.stringify(trimmed), true);
+    state.leaderboard = trimmed;
+    state.savedThisRun = true;
+  }catch(err){
+    console.error('Gagal menyimpan skor:', err);
+  }
+}
+
+// ---------------- LEADERBOARD ----------------
+function renderLeaderboard(){
+  app.innerHTML = `
+    <div class="card">
+      <div class="lb-header">
+        <div class="lb-title">Papan skor</div>
+        <button class="btn-ghost" style="width:auto;margin:0;padding:8px 14px;" id="back-btn">Kembali</button>
+      </div>
+      <div id="lb-body"><div class="lb-loading">Memuat papan skor...</div></div>
+    </div>
+  `;
+  document.getElementById('back-btn').onclick = () => {
+    state.screen = 'start';
+    render();
+  };
+
+  const renderList = (list) => {
+    const body = document.getElementById('lb-body');
+    if(!body) return;
+    if(!list || list.length === 0){
+      body.innerHTML = '<div class="lb-empty">Belum ada skor tersimpan. Jadilah yang pertama!</div>';
+      return;
+    }
+    let rows = '';
+    list.forEach((entry, i) => {
+      const rank = i + 1;
+      let rankCls = 'lb-rank';
+      if(rank === 1) rankCls += ' top1';
+      else if(rank === 2) rankCls += ' top2';
+      else if(rank === 3) rankCls += ' top3';
+      const isMe = entry.name === state.name && entry.kelas === state.kelas && state.savedThisRun;
+      rows += `
+        <div class="lb-row${isMe ? ' me' : ''}">
+          <div class="${rankCls}">${rank}</div>
+          <div class="lb-name">
+            <div class="n">${escapeHtml(entry.name)}</div>
+            <div class="k">Kelas ${escapeHtml(entry.kelas)}</div>
+          </div>
+          <div class="lb-score num">${entry.score}</div>
+        </div>
+      `;
+    });
+    body.innerHTML = `<div class="lb-list">${rows}</div>
+      <div class="privacy-note">Papan skor ini bersifat bersama dan dapat dilihat oleh semua pengguna kuis ini.</div>`;
+  };
+
+  if(state.leaderboard){
+    renderList(state.leaderboard);
+  } else {
+    loadLeaderboardData().then(list => {
+      state.leaderboard = list;
+      renderList(list);
+    });
+  }
+}
+
+// ---------------- Storage helpers ----------------
+async function loadProfile(){
+  try{
+    const r = await window.storage.get('profile', false);
+    return r ? JSON.parse(r.value) : null;
+  }catch(e){
+    return null;
+  }
+}
+async function saveProfile(p){
+  try{
+    await window.storage.set('profile', JSON.stringify(p), false);
+  }catch(e){
+    console.error('Gagal menyimpan profil:', e);
+  }
+}
+async function loadLeaderboardData(){
+  try{
+    const r = await window.storage.get('leaderboard-data', true);
+    return r ? JSON.parse(r.value) : [];
+  }catch(e){
+    return [];
+  }
+}
+
+// ---------------- Utils ----------------
+function escapeHtml(str){
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+function escapeAttr(str){ return escapeHtml(str); }
+
+render();
+</script>
+</body>
+</html>
